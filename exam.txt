@@ -1,0 +1,143 @@
+k means clustering without 
+
+import numpy as np
+import matplotlib.pyplot as plt
+data = np.array([[2, 10],[2, 51],[8, 4], [5, 8],[7, 5],[6, 4],[1, 2],[4, 91]])
+
+centroids = np.array([[2, 10],[5, 81],[1, 2]])
+
+np.shape(data)
+k = 3
+
+# Maximum number of iterations
+max_iterations = 100
+
+#K-means algorithm
+for i in range(max_iterations):
+  #Assign data points to the nearest centroid
+  #distance to centroid 1 np. linalg.norm([[2, 10] [2, 10]], axis=2)
+  #np.argnin(... axis-1): For each data point, it finds the index (cluster number)
+  #of the centroid with the minimum Euclidean distance, effectively #assigning each data point to the nearest centroid.
+  labels = np.argmin (np. linalg.norm(data[:,None]- centroids, axis=2), axis=1)
+
+  #update centroids by calculating the mean of data points in each cluster
+  new_centroids = np.array([data[labels==i].mean(axis=0) for i in range(k)])
+
+  #Check for convergence
+  if np.all(centroids==new_centroids):
+    break
+
+  centroids = new_centroids
+
+#Print the final cluster centroids and labels
+
+print("Final Cluster Centroids:")
+print(centroids)
+print("Cluster Labels: ")
+print(labels)
+plt.show()
+
+k means clustering with
+
+import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.cluster import DBSCAN
+from sklearn import metrics
+from sklearn.datasets import make_blobs
+from sklearn.preprocessing import StandardScaler
+from sklearn import datasets
+# Load data in X
+X, y_true = make_blobs(n_samples=300, centers=4,
+					cluster_std=0.50, random_state=0)
+db = DBSCAN(eps=0.3, min_samples=10).fit(X)
+core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
+core_samples_mask[db.core_sample_indices_] = True
+labels = db.labels_
+
+# Number of clusters in labels, ignoring noise if present.
+n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
+
+# Plot result
+
+# Black removed and is used for noise instead.
+unique_labels = set(labels)
+colors = ['y', 'b', 'g', 'r']
+print(colors)
+for k, col in zip(unique_labels, colors):
+	if k == -1:
+		# Black used for noise.
+		col = 'k'
+
+	class_member_mask = (labels == k)
+
+	xy = X[class_member_mask & core_samples_mask]
+	plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=col,
+			markeredgecolor='k',
+			markersize=6)
+
+	xy = X[class_member_mask & ~core_samples_mask]
+	plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=col,
+			markeredgecolor='k',
+			markersize=6)
+
+plt.title('number of clusters: %d' % n_clusters_)
+plt.show()
+
+DBscan with package
+
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+
+data = pd.read_csv('/content/Salary_dataset.csv')
+data
+
+x1=data['YearsExperience']
+x2=data['Salary']
+
+data=np.array(list(zip(x1,x2)))
+data
+
+from sklearn.cluster import DBSCAN
+dbscan = DBSCAN(eps = 12.5, min_samples=4).fit(data)
+labels = dbscan.labels_
+
+plt.scatter(data[:,0], data[:,1], c=labels,cmap="rainbow")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.show()
+
+decision tree
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import LabelEncoder
+from sklearn import tree
+from sklearn.tree import DecisionTreeClassifier,plot_tree
+
+df=pd.read_csv('/content/tennis.csv')
+df
+
+le=LabelEncoder()
+df['outlook_n']=le.fit_transform(df['outlook'])
+df['temp_n']=le.fit_transform(df['temp'])
+df['humidity_n']=le.fit_transform(df['humidity'])
+df['windy_n']=le.fit_transform(df['windy'])
+df['play_n']=le.fit_transform(df['play'])
+df
+
+df=df.drop(['outlook','temp','humidity','windy','play'],axis='columns')
+df
+
+independent_variable=df.drop('play_n',axis='columns')
+dependent_var=df['play_n']
+
+model=tree.DecisionTreeClassifier()
+
+model.score(independent_variable,dependent_var)
+
+model.predict([[1,2,0,1]])
+
+plot_tree(model,filled=True,feature_names=df.columns,class_names=le.classes_)
+plt.show()
