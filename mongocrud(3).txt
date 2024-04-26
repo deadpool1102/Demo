@@ -1,0 +1,124 @@
+CRUD using MongoDB
+
+------
+
+test> show dbs
+admin      40.00 KiB
+config     72.00 KiB
+local      40.00 KiB
+
+1.Creating a new database. 
+
+test> use userdbs
+switched to db userdbs
+
+2.Creating a new collection.
+
+userdbs> db.createCollection("users")
+{ ok: 1 }
+
+3.Inserting document in a collection.
+
+userdbs> db.users.deleteOne({})
+{ acknowledged: true, deletedCount: 0 }
+userdbs> db.users.insertOne({name:"Angela",age:27});
+{
+  acknowledged: true,
+  insertedId: ObjectId('65e200e51e174e2c0e044595')
+}
+userdbs> db.users.insertMany([{name:"Dwight",age:30},{name:"Jim",age:29}])
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('65e2014e1e174e2c0e044596'),
+    '1': ObjectId('65e2014e1e174e2c0e044597')
+  }
+}
+
+4.Retrieve data from collection.
+
+userdbs> db.users.find()
+[
+  {
+    _id: ObjectId('65e200e51e174e2c0e044595'),
+    name: 'Angela',
+    age: 27
+  },
+  {
+    _id: ObjectId('65e2014e1e174e2c0e044596'),
+    name: 'Dwight',
+    age: 30
+  },
+  { _id: ObjectId('65e2014e1e174e2c0e044597'), name: 'Jim', age: 29 }
+]
+userdbs> db.users.find({age:{$gt:29}},{name:1,age:1})
+[
+  {
+    _id: ObjectId('65e2014e1e174e2c0e044596'),
+    name: 'Dwight',
+    age: 30
+  }
+]
+userdbs> db.users.findOne({name:"Jim"})
+{ _id: ObjectId('65e2014e1e174e2c0e044597'), name: 'Jim', age: 29 }
+
+5.Update the data
+
+userdbs> db.users.updateOne({name:"Angela"},{$set:{email:"angela@gmail.com"}})
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+userdbs> db.users.updateMany({age:{$lt:30}},{$set:{status:"active"}})
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 2,
+  modifiedCount: 2,
+  upsertedCount: 0
+}
+userdbs> db.users.find()
+[
+  {
+    _id: ObjectId('65e200e51e174e2c0e044595'),
+    name: 'Angela',
+    age: 27,
+    email: 'angela@gmail.com',
+    status: 'active'
+  },
+  {
+    _id: ObjectId('65e2014e1e174e2c0e044596'),
+    name: 'Dwight',
+    age: 30
+  },
+  {
+    _id: ObjectId('65e2014e1e174e2c0e044597'),
+    name: 'Jim',
+    age: 29,
+    status: 'active'
+  }
+]
+
+6.Delete documents.
+
+userdbs> db.users.deleteOne({name:"Angela"})
+{ acknowledged: true, deletedCount: 1 }
+userdbs> db.users.deleteMany({age:{$lt:30}})
+{ acknowledged: true, deletedCount: 1 }
+userdbs> db.users.find()
+[
+  {
+    _id: ObjectId('65e2014e1e174e2c0e044596'),
+    name: 'Dwight',
+    age: 30
+  }
+]
+
+7.Remove entire collection.
+
+userdbs> db.users.drop()
+true
+userdbs>
