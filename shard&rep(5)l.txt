@@ -1,0 +1,68 @@
+
+Create a folder and in that folder make 9 files/folders with names -> primary, secondary1, secondary2, server, server1, server2, shard, shard1, shard2 and run the commands mentioned below
+
+REPLICATION
+~~~~~~~~~~~~
+
+**OPEN NEW CMD AND RUN FOLLOWING COMMANDS** 
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+C:\Users>cd (folder path) (Main folder sharding path)
+
+start mongod --port=50000 --replSet="Server1" --dbpath="(folder path)/primary"
+start mongod --port=50001 --replSet="Server1" --dbpath="(folder path)/secondary1"
+start mongod --port=50002 --replSet="Server1" --dbpath="(folder path)/secondary2"
+
+
+**OPEN NEW CMD AND RUN FOLLOWING COMMANDS** 
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+C:\Users>mongosh --port=50000
+
+test> rs.initiate({_id:"Server1", members:[{_id:0, host:"localhost:50000"}, {_id:1, host:"localhost:50001"}, {_id:2, host:"localhost:50002"}]});
+
+
+
+CONFIG SERVERS
+~~~~~~~~~~~~~~~
+
+**OPEN NEW CMD AND RUN FOLLOWING COMMANDS** 
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users>cd (folder path)\Sharding
+
+start mongod --configsvr --port=1030 --replSet="Server1" --dbpath="(folder path)/server"
+
+start mongod --configsvr --port=1040 --replSet="Server1" --dbpath="(folder path)/server1"
+
+start mongod --configsvr --port=1050 --replSet="Server1" --dbpath="(folder path)/server2"
+
+**OPEN NEW CMD AND RUN FOLLOWING COMMANDS** 
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users> mongosh --host="localhost:1030"
+
+test> rs.initiate({_id:"Server1", configsvr:true, members:[{_id:0, host:"localhost:1030"}, {_id:1, host:"localhost:1040"}, {_id:2, host:"localhost:1050"}]})
+
+
+
+SHARDS
+~~~~~~~
+
+**OPEN NEW CMD AND RUN FOLLOWING COMMANDS** 
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+C:\Users>cd (folder path)\Sharding
+
+start mongod --shardsvr --port=1130 --replSet="Server1" --dbpath="(folder path)/shard" 
+
+start mongod --shardsvr --port=1140 --replSet="Server1" --dbpath="(folder path)/shard1" 
+
+start mongod --shardsvr --port=1150 --replSet="Server1" --dbpath="(folder path)/shard2" 
+
+
+**OPEN NEW CMD AND RUN FOLLOWING COMMANDS** 
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+C:\Users>mongosh --host="localhost:1130"
+
+test> rs.initiate({_id:"Server1", members: [{_id: 0, host: "localhost:1130"}, {_id: 1, host: "localhost:1140"}, {_id: 2, host: "localhost:1150"}]})
+
