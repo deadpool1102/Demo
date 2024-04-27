@@ -1,0 +1,7 @@
+Open cmd and type
+
+for Backup
+mysqldump -u root -p dbname > foldername.sql
+
+for Restore
+mysql -u root -p dbname < foldername.sql
